@@ -1,20 +1,20 @@
 import streamlit as st
 import torch
-from transformers import BartTokenizer, BartForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 MODEL_NAME = "Ruman56/news_classifier_model"
 
 @st.cache_resource
 def load_model():
-    tokenizer = BartTokenizer.from_pretrained(MODEL_NAME)
-    model = BartForSequenceClassification.from_pretrained(MODEL_NAME)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
     model.eval()
     return tokenizer, model
 
 tokenizer, model = load_model()
 
-st.set_page_config(page_title="News Topic Classifier (BART)")
-st.title("📰 News Topic Classifier (BART)")
+st.set_page_config(page_title="📰 News Topic Classifier")
+st.title("📰 News Topic Classifier")
 
 text = st.text_area("Enter news text", height=200)
 
