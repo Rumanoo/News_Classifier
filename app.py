@@ -4,6 +4,13 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 MODEL_NAME = "Ruman56/news_classifier_model"
 
+LABEL_MAP = {
+    "LABEL_0": "Politics",
+    "LABEL_1": "Sports",
+    "LABEL_2": "Business",
+    "LABEL_3": "Sci/Tech"
+}
+
 @st.cache_resource
 def load_model():
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -32,6 +39,12 @@ if st.button("Classify"):
 
         with torch.no_grad():
             outputs = model(**inputs)
-            prediction = torch.argmax(outputs.logits, dim=1).item()
+            probs = torch.softmax(outputs.logits, dim=1)
+            pred_id = torch.argmax(probs, dim=1).item()
 
-        st.success(f"Predicted Class ID: {prediction}")
+        raw_label = model.config.id2label[pred_id]
+        final_label = LABEL_MAP.get(raw_label, raw_label)
+        confidence = probs[0][pred_id].item() * 100
+
+        st.success(f"🧠 Prediction: **{final_label}**")
+        st.info(f"Confidence: **{confidence:.2f}%**")
